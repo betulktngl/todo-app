@@ -1,299 +1,479 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Görevlerinizi kolayca yönetin">
   <title>Görev Uygulaması</title>
-  <p id="counter"></p>
-  <input type="text" id="search" placeholder="Görev ara...">
-  <button id="clearAll">Hepsini Sil</button>
-  <div id="counter"></div>
-  <ul id="taskList"></ul>
-  <h3>Çöp kutusu🗑️</h3>
-  <ul id="trashList"></ul>
-  <button id="darkModeBtn">Modunuzu seçin🌙</button>
-  <input type="date" id="taskDate">
-  <select id="priority">
-  <option value="low">Önemli değil</option>
-  <option value="medium">Önemli</option>
-  <option value="high">Acil</option>
-  </select> 
-
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #ab5757, #e57db3);
-  display: flow-root;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e06d93, #f493c5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      transition: background 0.3s ease;
+    }
 
-.container {
-  background: rgb(151, 99, 99);
-  padding: 10px;
-  border-radius: 10px;
-  width: 200px;
-  box-shadow: 0 10px 25px rgba(78, 14, 4, 0.2);
-  text-align:unset;
-}
+    #darkModeBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: #ffffff;
+      color: #2c1010;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
 
-.top-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
+    .container {
+      background: rgba(181, 72, 136, 0.95);
+      padding: 30px;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 15px 35px rgba(78, 14, 4, 0.3);
+      color: #fff;
+    }
 
-input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #858585;
-}
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
 
-button {
-  padding: 10px 10px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  background: #d1c8c6;
-  color: rgb(44, 16, 16);
-}
-button:hover {
-  opacity: 0.6;
-}
+    .add-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
 
-ul {
-  list-style: none;
-  padding: 0;
-}
-li {
-  background: hsla(0, 66%, 82%, 0.901);
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 10px;
-  display:flex;
-  justify-content: space-between;
-  align-items: center;
-}
-li span {
-  color: rgb(255, 255, 255);
-  font-size: 15px;
-  font-weight: bolder;
-}
-.completed span {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
+    .add-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
 
-#counter {
-  font-weight:bolder;
-  margin-bottom: 10px;
-}
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 0.95rem;
+    }
 
-#trashList li {
-  opacity: 0.4;
-  margin-top: 10px;
-  border-top: 2px dashed #4f3d7f;
-  padding-top: 10px;
-}
+    input[type="date"], select {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #fff;
+      color: #000;
+      font-size: 0.9rem;
+      outline: none;
+      color-scheme: light;
+    }
 
-.dark {
-  background: #424a64;
-  color: rgb(184, 185, 196);
-}
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0);
+      cursor: pointer;
+    }
 
-.dark li {
-  background: #5d5d76;
-}
+    button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #e2d2ce;
+      color: #2c1010;
+      font-weight: bold;
+      transition: transform 0.15s, opacity 0.2s, background-color 0.2s;
+    }
 
-body.dark li.completed span {
-  color: #9d9999;
-  text-decoration: line-through;
-}
+    button:hover {
+      opacity: 0.85;
+      transform: scale(1.02);
+    }
 
-body.dark .container {
-  background-color: #191731;
-  color: rgb(177, 166, 166);
-  box-shadow: 0 0 20px rgba(13, 4, 36, 0.6);
-}
-body.dark {
-  background: linear-gradient(135deg, #0a0434, #191a5e, #453994);
-}
-.dark input {
-  background: #c6c2c2;
-  color: rgb(36, 34, 75);
-  border: none;
-}
-.top-bar {
-  margin-bottom: 15px;
-}
-#searchInput {
-  width: 100%;
-  background: #fffafa;
-}
+    #addBtn {
+      background: #e5d4e0;
+      color: #d05ea0;
+    }
 
-.high { border-left: 15px solid rgb(246, 73, 73); }
-.medium { border-left: 15px solid rgb(239, 230, 103); }
-.low { border-left: 15px solid rgb(171, 228, 171); }
+    .delete-btn {
+      background: #f1e1ebe6;
+      color: #dc79c2;
+    }
 
-</style>
+    #clearAll {
+      background: #f5e8f3;
+      color: #d864ba;
+    }
+
+    .controls-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    #counter {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: rgba(255, 255, 255, 0.22);
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    li span {
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-group button {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+    }
+
+    .completed span {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+
+    h3 {
+      margin-top: 25px;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.25);
+      padding-top: 15px;
+    }
+
+    #trashList li {
+      opacity: 0.6;
+      border: 1px dashed rgba(255, 255, 255, 0.5);
+    }
+
+    .high { border-left: 8px solid #951616; }
+    .medium { border-left: 8px solid #ede684; }
+    .low { border-left: 8px solid #85d485; }
+
+    .custom-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .custom-modal-content {
+      background: #ffffff;
+      color: #2c1010;
+      padding: 28px 32px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .custom-modal-content p {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .custom-modal-content button {
+      background: #7d81c8;
+      color: #ffffff;
+      padding: 10px 24px;
+      font-size: 0.95rem;
+    }
+
+    body.dark {
+      background: linear-gradient(135deg, #0a0434, #27286e, #352b7b);
+    }
+
+    body.dark #darkModeBtn {
+      background: #0b1144;
+      color: #f8fafc;
+    }
+
+    body.dark .container {
+      background-color: #221c5a;
+      color: #e2e8f0;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    body.dark li {
+      background: #47456f;
+    }
+
+    body.dark input, body.dark select {
+      background: #2b294e;
+      color: #ffffff;
+      border: 1px solid #dadee4;
+      color-scheme: light;
+    }
+
+    body.dark input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+
+  
+    body.dark #addBtn {
+      background: #261aa4;
+      color: #dcdbdf;
+    }
+
+    body.dark .delete-btn {
+      background: #1e147b;
+      color: #e2e2e2;
+    }
+
+    body.dark #clearAll {
+      background: #2c1a93;
+      color: #d6cbf1;
+    }
+
+    body.dark .custom-modal-content {
+      background: #191731;
+      color: #f8fafc;
+      border: 1px solid #677385;
+    }
+  </style>
 </head>
 <body>
- 
-<div class="container">
-  <div class="top-bar">
-    <input id="taskInput" placeholder="Görev yaz">
-    <button id="addBtn">Ekle</button>
+
+  <button id="darkModeBtn">Modunuzu seçin 🌙</button>
+
+  <div class="container">
+    <h2>Görev Defterim</h2>
+
+    <div class="add-section">
+      <input type="text" id="taskInput" placeholder="Yeni bir görev yazın...">
+      <div class="add-row">
+        <input type="date" id="taskDate">
+        <select id="priority">
+          <option value="low">Önemli değil</option>
+          <option value="medium">Önemli</option>
+          <option value="high">Acil</option>
+        </select>
+        <button id="addBtn">Ekle</button>
+      </div>
+    </div>
+
+    <div class="controls-bar">
+      <input type="text" id="search" placeholder="Görev ara...">
+      <button id="clearAll">Hepsini Sil</button>
+    </div>
+
+    <div id="counter">Toplam: 0 | Tamamlanan: 0</div>
+    
+    <ul id="taskList"></ul>
+    
+    <h3>Çöp Kutusu 🗑️</h3>
+    <ul id="trashList"></ul>
   </div>
-  <div id="counter"></div>
-  <ul id="taskList"></ul>
-</div>
+
+  <div id="tebrikModal" class="custom-modal">
+    <div class="custom-modal-content">
+      <p>Tüm görevleri bitirdin, tebrikler!</p>
+      <button id="modalKapatBtn">Tamam</button>
+    </div>
+  </div>
 
 <script>
-function createTask(text, completed = false, date = "", priority = "low") {
-
-  let li = document.createElement("li");
-  li.dataset.date = date;
-  li.classList.add(priority);
-
-  let span = document.createElement("span");
-  span.textContent = date ? text + " 📅 " + date : text;
-
-  let deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "Sil";
-
-  let doneBtn = document.createElement("button");
-  doneBtn.textContent = "✔️";
-
-  if (completed) li.classList.add("completed");
-
-  doneBtn.addEventListener("click", function() {
-    li.classList.toggle("completed");
-    updateCounter();
-    saveTasks();
-  });
-
-  deleteBtn.addEventListener("click", function() {
-    let trash = document.getElementById("trashList");
-    if (!trash) return;
-
-    let restoreBtn = document.createElement("button");
-    restoreBtn.textContent = "Geri Al";
-
-    deleteBtn.style.display = "none";
-    li.appendChild(restoreBtn);
-    trash.appendChild(li);
-
-    updateCounter();
-
-    restoreBtn.addEventListener("click", function() {
-      restoreBtn.remove();
-      deleteBtn.style.display = "inline-block";
-      document.getElementById("taskList").appendChild(li);
-      updateCounter();
-    });
-  });
-
-  li.appendChild(span);
-  li.appendChild(doneBtn);
-  li.appendChild(deleteBtn);
-
-  document.getElementById("taskList").appendChild(li);
-
-  updateCounter();
-  saveTasks();
-}
-
 document.addEventListener("DOMContentLoaded", function() {
+  const addBtn = document.getElementById("addBtn");
+  const taskInput = document.getElementById("taskInput");
+  const taskDateInput = document.getElementById("taskDate");
+  const prioritySelect = document.getElementById("priority");
+  const searchInput = document.getElementById("search");
+  const clearBtn = document.getElementById("clearAll");
+  const darkBtn = document.getElementById("darkModeBtn");
+  const taskList = document.getElementById("taskList");
+  const trashList = document.getElementById("trashList");
+  const counterDiv = document.getElementById("counter");
+  const tebrikModal = document.getElementById("tebrikModal");
+  const modalKapatBtn = document.getElementById("modalKapatBtn");
 
-  let button = document.getElementById("addBtn");
-  let input = document.getElementById("taskInput");
-  let search = document.getElementById("search");
-  let clearBtn = document.getElementById("clearAll");
-  let darkBtn = document.getElementById("darkModeBtn");
+  modalKapatBtn.addEventListener("click", function() {
+    tebrikModal.style.display = "none";
+  });
 
-  window.updateCounter = function() {
-    let tasks = document.querySelectorAll("#taskList li");
-    let completed = document.querySelectorAll("#taskList li.completed");
+  function updateCounter(checkAllDone = false) {
+    const tasks = taskList.querySelectorAll("li");
+    const completed = taskList.querySelectorAll("li.completed");
 
-    document.getElementById("counter").textContent =
-      "Toplam: " + tasks.length + " | Tamamlanan: " + completed.length;
+    counterDiv.textContent = `Toplam: ${tasks.length} | Tamamlanan: ${completed.length}`;
 
-    if (tasks.length > 0 && tasks.length === completed.length) {
-      alert("Tüm görevleri bitirdin tebrikler !💪");
+    if (checkAllDone && tasks.length > 0 && tasks.length === completed.length) {
+      setTimeout(() => {
+        tebrikModal.style.display = "flex";
+      }, 150);
     }
-  };
+  }
 
-  button.addEventListener("click", function() {
-    let taskText = input.value;
-    let taskDate = document.getElementById("taskDate").value;
-    let priority = document.getElementById("priority").value;
+  function saveTasks() {
+    const tasks = [];
+    taskList.querySelectorAll("li").forEach(li => {
+      tasks.push({
+        rawText: li.dataset.rawText,
+        date: li.dataset.date || "",
+        completed: li.classList.contains("completed"),
+        priority: li.dataset.priority || "low"
+      });
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
 
-    if (taskText.trim() === "") return;
+  function createTask(rawText, completed = false, date = "", priority = "low", shouldSave = true) {
+    const li = document.createElement("li");
+    li.dataset.rawText = rawText;
+    li.dataset.date = date;
+    li.dataset.priority = priority;
+    li.classList.add(priority);
+    if (completed) li.classList.add("completed");
 
-    createTask(taskText, false, taskDate, priority);
-    input.value = "";
+    const span = document.createElement("span");
+    span.textContent = date ? `${rawText} 📅 ${date}` : rawText;
+
+    const btnGroup = document.createElement("div");
+    btnGroup.className = "btn-group";
+
+    const doneBtn = document.createElement("button");
+    doneBtn.textContent = "✔️";
+    doneBtn.title = "Tamamlandı";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Sil";
+    deleteBtn.className = "delete-btn";
+
+    doneBtn.addEventListener("click", function() {
+      li.classList.toggle("completed");
+      updateCounter(true);
+      saveTasks();
+    });
+
+    deleteBtn.addEventListener("click", function() {
+      const restoreBtn = document.createElement("button");
+      restoreBtn.textContent = "Geri Al";
+
+      doneBtn.style.display = "none";
+      deleteBtn.style.display = "none";
+      btnGroup.appendChild(restoreBtn);
+      trashList.appendChild(li);
+
+      updateCounter(false);
+      saveTasks();
+
+      restoreBtn.addEventListener("click", function() {
+        restoreBtn.remove();
+        doneBtn.style.display = "inline-block";
+        deleteBtn.style.display = "inline-block";
+        taskList.appendChild(li);
+        updateCounter(false);
+        saveTasks();
+      });
+    });
+
+    btnGroup.appendChild(doneBtn);
+    btnGroup.appendChild(deleteBtn);
+
+    li.appendChild(span);
+    li.appendChild(btnGroup);
+    taskList.appendChild(li);
+
+    updateCounter(false);
+    if (shouldSave) saveTasks();
+  }
+
+  addBtn.addEventListener("click", function() {
+    const text = taskInput.value.trim();
+    if (text === "") return;
+
+    createTask(text, false, taskDateInput.value, prioritySelect.value, true);
+    taskInput.value = "";
+    taskDateInput.value = "";
   });
 
-  input.addEventListener("keypress", function(e) {
-    if (e.key === "Enter") button.click();
+  taskInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") addBtn.click();
   });
 
-  search.addEventListener("input", function() {
-    let value = this.value.toLowerCase();
-    let items = document.querySelectorAll("#taskList li");
-
-    items.forEach(function(li) {
-      let text = li.textContent.toLowerCase();
+  searchInput.addEventListener("input", function() {
+    const value = this.value.toLowerCase();
+    taskList.querySelectorAll("li").forEach(li => {
+      const text = li.querySelector("span").textContent.toLowerCase();
       li.style.display = text.includes(value) ? "flex" : "none";
     });
   });
 
   clearBtn.addEventListener("click", function() {
-    document.getElementById("taskList").innerHTML = "";
-    updateCounter();
+    taskList.innerHTML = "";
+    trashList.innerHTML = "";
+    updateCounter(false);
     saveTasks();
   });
 
-  if (darkBtn) {
-    darkBtn.addEventListener("click", function() {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-    });
+  darkBtn.addEventListener("click", function() {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("darkMode", isDark);
+  });
 
-    if (localStorage.getItem("darkMode") === "true") {
-      document.body.classList.add("dark");
-    }
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
   }
 
-  window.saveTasks = function() {
-    let tasks = [];
-
-    document.querySelectorAll("#taskList li").forEach(li => {
-      tasks.push({
-        text: li.querySelector("span").textContent,
-        completed: li.classList.contains("completed"),
-        priority: li.classList.contains("high") ? "high" :
-                  li.classList.contains("medium") ? "medium" : "low"
-      });
-    });
-
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  };
-
-  function loadTasks() {
-    let tasks = JSON.parse(localStorage.getItem("tasks"));
-    if (!tasks) return;
-
-    tasks.forEach(t => {
-      createTask(t.text, t.completed, "", t.priority);
-    });
-  }
-
-  loadTasks(); 
-
+  const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  savedTasks.forEach(t => {
+    createTask(t.rawText, t.completed, t.date, t.priority, false);
+  });
 });
 </script>
 </body>
